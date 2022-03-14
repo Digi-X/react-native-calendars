@@ -164,7 +164,7 @@ const BasicDay = (props: BasicDayProps) => {
     return (
       <Fragment>
         {renderText()}
-        {renderMarking()}
+        {isMultiDot?null:renderMarking()}
       </Fragment>
     );
   };
@@ -173,6 +173,8 @@ const BasicDay = (props: BasicDayProps) => {
     const {activeOpacity} = _marking;
 
     return (
+      <Fragment>
+
       <TouchableOpacity
         testID={testID}
         style={getContainerStyle()}
@@ -186,6 +188,8 @@ const BasicDay = (props: BasicDayProps) => {
       >
         {isMultiPeriod ? renderText() : renderContent()}
       </TouchableOpacity>
+        {isMultiDot ? renderMarking():null}
+      </Fragment>
     );
   };
 

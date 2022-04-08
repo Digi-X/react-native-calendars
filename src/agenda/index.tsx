@@ -4,7 +4,6 @@ import memoize from 'memoize-one';
 
 import React, {Component} from 'react';
 import {
-  Text,
   View,
   Dimensions,
   Animated,
@@ -16,13 +15,14 @@ import {
 
 import {extractComponentProps} from '../componentUpdater';
 import {parseDate, xdateToData, toMarkingFormat} from '../interface';
-import {weekDayNames, sameDate, sameMonth} from '../dateutils';
+import {sameDate, sameMonth} from '../dateutils';
 // @ts-expect-error
 import {AGENDA_CALENDAR_KNOB} from '../testIDs';
 import {VelocityTracker} from '../velocityTracker';
 import {DateData, AgendaSchedule} from '../types';
 import {getCalendarDateString} from '../services';
 import styleConstructor from './style';
+import WeekDaysNames from '../commons/WeekDaysNames';
 import CalendarList, {CalendarListProps} from '../calendar-list';
 import ReservationList, {ReservationListProps}  from './reservation-list';
 
@@ -114,8 +114,8 @@ export default class Agenda extends Component<AgendaProps, State> {
       calendarIsReady: false,
       calendarScrollable: false,
       firstReservationLoad: false,
-      selectedDay: this.getSelectedDate(),
-      topDay: this.getSelectedDate()
+      selectedDay: this.getSelectedDate(props.selected),
+      topDay: this.getSelectedDate(props.selected)
     };
 
     this.currentMonth = this.state.selectedDay.clone();
@@ -135,9 +135,13 @@ export default class Agenda extends Component<AgendaProps, State> {
   }
 
   componentDidUpdate(prevProps: AgendaProps, prevState: State) {
-    const newSelectedDate = this.getSelectedDate();
+    const newSelectedDate = this.getSelectedDate(this.props.selected);
+    
     if (!sameDate(newSelectedDate, prevState.selectedDay)) {
-      this.setState({selectedDay: newSelectedDate});
+      const prevSelectedDate = this.getSelectedDate(prevProps.selected);
+      if (!sameDate(newSelectedDate, prevSelectedDate)) {
+        this.setState({selectedDay: newSelectedDate});
+      }
     } else if (!prevProps.items) {
       this.loadReservations(this.props);
     }
@@ -150,8 +154,7 @@ export default class Agenda extends Component<AgendaProps, State> {
     return null;
   }
 
-  getSelectedDate() {
-    const {selected} = this.props;
+  getSelectedDate(selected?: string) {
     return selected ? parseDate(selected) : new XDate(true);
   }
 
@@ -373,26 +376,21 @@ export default class Agenda extends Component<AgendaProps, State> {
     return knob;
   }
 
-  renderWeekDaysNames = memoize((weekDaysNames: string[]) => {
-    return weekDaysNames.map((day, index) => (
-      <Text 
-        key={day + index} 
-        style={this.style.weekday} 
-        allowFontScaling={false} 
-        numberOfLines={1}
-      >
-        {day}
-      </Text>
-    ));
-  });
+  renderWeekDaysNames = () => {
+    return (
+      <WeekDaysNames 
+        firstDay={this.props.firstDay} 
+        style={this.style.dayHeader} 
+      />
+    );
+  };
 
   renderWeekNumbersSpace = () => {
-    return this.props.showWeekNumbers && <View style={this.style.weekday} />;
+    return this.props.showWeekNumbers && <View style={this.style.dayHeader}/>;
   };
 
   render() {
-    const {firstDay, hideKnob, style, testID} = this.props;
-    const weekDaysNames = weekDayNames(firstDay);
+    const {hideKnob, style, testID} = this.props;
     const agendaHeight = this.initialScrollPadPosition();
     const weekdaysStyle = [
       this.style.weekdays,
@@ -458,7 +456,7 @@ export default class Agenda extends Component<AgendaProps, State> {
         </Animated.View>
         <Animated.View style={weekdaysStyle}>
           {this.renderWeekNumbersSpace()}
-          {this.renderWeekDaysNames(weekDaysNames)}
+          {this.renderWeekDaysNames()}
         </Animated.View>
         <Animated.ScrollView
           ref={this.scrollPad}

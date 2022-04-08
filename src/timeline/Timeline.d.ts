@@ -1,5 +1,6 @@
 import React from 'react';
 import { Theme } from '../types';
+import { UnavailableHours } from './Packer';
 import { TimelineHoursProps } from './TimelineHours';
 import { Event, PackedEvent } from './EventBlock';
 export interface TimelineProps {
@@ -83,6 +84,14 @@ export interface TimelineProps {
      * Spacing to keep at the right edge (for background press)
      */
     rightEdgeSpacing?: number;
+    /**
+     * Range of available hours
+     */
+    unavailableHours?: UnavailableHours[];
+    /**
+     * Background color for unavailable hours
+     */
+    unavailableHoursColor?: string;
 }
 export { Event as TimelineEventProps, PackedEvent as TimelinePackedEventProps };
 declare const _default: React.MemoExoticComponent<(props: TimelineProps) => JSX.Element>;

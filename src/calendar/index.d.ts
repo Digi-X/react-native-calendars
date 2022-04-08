@@ -1,5 +1,4 @@
-import XDate from 'xdate';
-import React, { Component } from 'react';
+/// <reference types="react" />
 import { ViewStyle, StyleProp } from 'react-native';
 import { DateData, Theme } from '../types';
 import { CalendarHeaderProps } from './header';
@@ -54,47 +53,17 @@ export interface CalendarProps extends CalendarHeaderProps, DayProps {
     /** Allow selection of dates before minDate or after maxDate */
     allowSelectionOutOfRange?: boolean;
 }
-interface State {
-    prevInitialDate?: string;
-    currentMonth: any;
-}
 /**
  * @description: Calendar component
  * @example: https://github.com/wix/react-native-calendars/blob/master/example/src/screens/calendars.js
  * @gif: https://github.com/wix/react-native-calendars/blob/master/demo/assets/calendar.gif
  */
-declare class Calendar extends Component<CalendarProps, State> {
-    static displayName: string;
-    static propTypes: any;
-    static defaultProps: {
+declare const Calendar: {
+    (props: CalendarProps): JSX.Element;
+    displayName: string;
+    propTypes: any;
+    defaultProps: {
         enableSwipeMonths: boolean;
     };
-    state: {
-        prevInitialDate: string | undefined;
-        currentMonth: any;
-    };
-    style: any;
-    header: React.RefObject<any>;
-    static getDerivedStateFromProps(nextProps: CalendarProps, prevState: State): {
-        prevInitialDate: string;
-        currentMonth: any;
-    } | null;
-    addMonth: (count: number) => void;
-    updateMonth: (day: any) => void;
-    handleDayInteraction(date: DateData, interaction?: (date: DateData) => void): void;
-    pressDay: (date?: DateData | undefined) => void;
-    longPressDay: (date?: DateData | undefined) => void;
-    swipeProps: {
-        onSwipe: (direction: string) => void;
-    };
-    onSwipe: (gestureName: string) => void;
-    onSwipeLeft: () => void;
-    onSwipeRight: () => void;
-    renderWeekNumber: (this: any, weekNumber: any) => JSX.Element;
-    renderDay(day: XDate, id: number): JSX.Element;
-    renderWeek(days: XDate[], id: number): JSX.Element;
-    renderMonth(): JSX.Element;
-    renderHeader(): JSX.Element;
-    render(): JSX.Element;
-}
+};
 export default Calendar;

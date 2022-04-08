@@ -1,5 +1,6 @@
 import React from 'react';
 import { ViewStyle, TextStyle } from 'react-native';
+import { UnavailableHours } from './Packer';
 interface NewEventTime {
     hour: number;
     minutes: number;
@@ -12,6 +13,8 @@ export interface TimelineHoursProps {
     format24h?: boolean;
     onBackgroundLongPress?: (timeString: string, time: NewEventTime) => void;
     onBackgroundLongPressOut?: (timeString: string, time: NewEventTime) => void;
+    unavailableHours?: UnavailableHours[];
+    unavailableHoursColor?: string;
     styles: {
         [key: string]: ViewStyle | TextStyle;
     };

@@ -6,6 +6,19 @@ interface PopulateOptions {
     overlapEventsSpacing?: number;
     rightEdgeSpacing?: number;
 }
+export interface UnavailableHours {
+    start: number;
+    end: number;
+}
+interface UnavailableHoursOptions {
+    hourBlockHeight?: number;
+    dayStart: number;
+    dayEnd: number;
+}
 export declare const HOUR_BLOCK_HEIGHT = 100;
-declare function populateEvents(_events: Event[], populateOptions: PopulateOptions): PackedEvent[];
-export default populateEvents;
+export declare function populateEvents(_events: Event[], populateOptions: PopulateOptions): PackedEvent[];
+export declare function buildUnavailableHoursBlocks(unavailableHours: UnavailableHours[] | undefined, options: UnavailableHoursOptions): ({
+    top: number;
+    height: number;
+} | undefined)[];
+export {};

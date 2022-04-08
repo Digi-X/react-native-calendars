@@ -3,7 +3,7 @@ import { StyleSheet, View, ScrollView, Text, TouchableOpacity } from 'react-nati
 import { Calendar } from 'react-native-calendars';
 import testIDs from '../testIDs';
 const INITIAL_DATE = '2020-02-02';
-const CalendarsScreen = () => {
+const CalendarScreen = () => {
     const [selected, setSelected] = useState(INITIAL_DATE);
     const onDayPress = useCallback(day => {
         setSelected(day.dateString);
@@ -122,7 +122,7 @@ const CalendarsScreen = () => {
                     }
                 },
                 '2012-05-23': { color: '#70d7c7', textColor: 'white', marked: true, dotColor: 'white' },
-                '2012-05-24': { color: '#70d7c7', textColor: 'white' },
+                '2012-05-24': { color: '#70d7c7', inactive: true },
                 '2012-05-25': {
                     endingDay: true,
                     color: '#50cebb',
@@ -132,11 +132,13 @@ const CalendarsScreen = () => {
                         borderBottomRightRadius: 5
                     }
                 },
-                '2012-05-30': { disabled: true, disableTouchEvent: true }
+                '2012-05-30': { inactive: true, disableTouchEvent: true }
             }} disabledDaysIndexes={[0, 6]} theme={{
+                textInactiveColor: '#a68a9f',
                 textSectionTitleDisabledColor: 'grey',
-                textSectionTitleColor: '#00BBF2'
-            }}/>
+                textSectionTitleColor: '#319e8e',
+                arrowColor: '#319e8e'
+            }} onDayPress={(day) => console.warn(`${day.dateString} pressed`)}/>
       </Fragment>);
     };
     const renderCalendarWithMultiPeriodMarking = () => {
@@ -343,7 +345,7 @@ const CalendarsScreen = () => {
       {renderExamples()}
     </ScrollView>);
 };
-export default CalendarsScreen;
+export default CalendarScreen;
 const styles = StyleSheet.create({
     calendar: {
         marginBottom: 10

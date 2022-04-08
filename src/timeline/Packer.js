@@ -1,6 +1,7 @@
 // @flow
 import XDate from 'xdate';
 import constants from '../commons/constants';
+import inRange from 'lodash/inRange';
 export const HOUR_BLOCK_HEIGHT = 100;
 const OVERLAP_EVENTS_SPACINGS = 10;
 const RIGHT_EDGE_SPACING = 10;
@@ -46,7 +47,7 @@ function packOverlappingEventGroup(columns, calculatedEvents, populateOptions) {
         });
     });
 }
-function populateEvents(_events, populateOptions) {
+export function populateEvents(_events, populateOptions) {
     let lastEnd = null;
     let columns = [];
     const calculatedEvents = [];
@@ -93,4 +94,27 @@ function populateEvents(_events, populateOptions) {
     }
     return calculatedEvents;
 }
-export default populateEvents;
+export function buildUnavailableHoursBlocks(unavailableHours = [], options) {
+    const { hourBlockHeight = HOUR_BLOCK_HEIGHT, dayStart = 0, dayEnd = 24 } = options || {};
+    const totalDayHours = dayEnd - dayStart;
+    const totalDayHeight = (dayEnd - dayStart) * hourBlockHeight;
+    return (unavailableHours
+        .map(hours => {
+        if (!inRange(hours.start, 0, 25) || !inRange(hours.end, 0, 25)) {
+            console.error('Calendar Timeline unavailableHours is invalid. Hours should be between 0 and 24');
+            return undefined;
+        }
+        if (hours.start >= hours.end) {
+            console.error('Calendar Timeline availableHours is invalid. start hour should be earlier than end hour');
+            return undefined;
+        }
+        const startFixed = Math.max(hours.start, dayStart);
+        const endFixed = Math.min(hours.end, dayEnd);
+        return {
+            top: ((startFixed - dayStart) / totalDayHours) * totalDayHeight,
+            height: (endFixed - startFixed) * hourBlockHeight
+        };
+    })
+        // Note: this filter falsy values (undefined blocks)
+        .filter(Boolean));
+}

@@ -61,7 +61,7 @@ export default class Agenda extends Component<AgendaProps, State> {
     static getDerivedStateFromProps(nextProps: AgendaProps): {
         firstReservationLoad: boolean;
     } | null;
-    getSelectedDate(): any;
+    getSelectedDate(selected?: string): any;
     calendarOffset(): number;
     initialScrollPadPosition: () => number;
     setScrollPadPosition: (y: number, animated: boolean) => void;
@@ -83,7 +83,7 @@ export default class Agenda extends Component<AgendaProps, State> {
     renderReservations(): JSX.Element;
     renderCalendarList(): JSX.Element;
     renderKnob(): JSX.Element | null;
-    renderWeekDaysNames: (weekDaysNames: string[]) => JSX.Element[];
+    renderWeekDaysNames: () => JSX.Element;
     renderWeekNumbersSpace: () => false | JSX.Element | undefined;
     render(): JSX.Element;
 }

@@ -78,7 +78,7 @@ export default function styleConstructor(theme?: Theme): {
         flexDirection: "row";
         justifyContent: "space-between";
     };
-    weekday: {
+    dayHeader: {
         width: number;
         textAlign: "center";
         fontSize: number;
@@ -120,19 +120,14 @@ export default function styleConstructor(theme?: Theme): {
     emptyDayContainer: {
         flex: number;
     };
-    dayHeader: {
-        width: number;
-        textAlign: "center";
-        fontSize: number;
-        fontFamily: string;
-        fontWeight: "normal" | "bold" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | undefined;
-        color: string;
-    };
     arrowImage: {
         tintColor: string;
         transform: {
             scaleX: number;
         }[] | undefined;
+    };
+    contextWrapper: {
+        flex: number;
     };
     todayButtonContainer: {
         alignItems: "flex-start" | "flex-end";

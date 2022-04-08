@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import XDate from 'xdate';
 import InfiniteList from '../../infinite-list';
 import Week from '../week';
-import WeekDaysNames from './WeekDaysNames';
+import WeekDaysNames from '../../commons/WeekDaysNames';
 import CalendarContext from '../../expandableCalendar/Context';
 import styleConstructor from '../style';
 import { toMarkingFormat } from '../../interface';

@@ -1,97 +1,40 @@
 import XDate from 'xdate';
-import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { TouchableWithoutFeedback, Text, View } from 'react-native';
+import React, { useCallback, useRef, useMemo } from 'react';
+import { TouchableWithoutFeedback, TouchableOpacity, Text, View } from 'react-native';
 import { xdateToData } from '../../../interface';
-import { shouldUpdate } from '../../../componentUpdater';
-import * as defaultStyle from '../../../style';
 import styleConstructor from './style';
 import Dot from '../dot';
-export default class PeriodDay extends Component {
-    static displayName = 'PeriodDay';
-    static propTypes = {
-        state: PropTypes.oneOf(['selected', 'disabled', 'inactive', 'today', '']),
-        marking: PropTypes.any,
-        theme: PropTypes.object,
-        onPress: PropTypes.func,
-        onLongPress: PropTypes.func,
-        date: PropTypes.string
-    };
-    theme;
-    style;
-    markingStyle;
-    dateData;
-    constructor(props) {
-        super(props);
-        this.theme = { ...defaultStyle, ...(props.theme || {}) };
-        this.style = styleConstructor(props.theme);
-        this.markingStyle = this.getDrawingStyle(props.marking);
-        this.dateData = props.date ? xdateToData(new XDate(props.date)) : undefined;
-    }
-    onPress = () => {
-        this.props.onPress?.(this.dateData);
-    };
-    onLongPress = () => {
-        this.props.onLongPress?.(this.dateData);
-    };
-    shouldComponentUpdate(nextProps) {
-        const newMarkingStyle = this.getDrawingStyle(nextProps.marking);
-        if (!isEqual(this.markingStyle, newMarkingStyle)) {
-            this.markingStyle = newMarkingStyle;
-            return true;
-        }
-        return shouldUpdate(this.props, nextProps, ['children', 'state', 'marking', 'onPress', 'onLongPress', 'date']);
-    }
-    // TODO: refactor to use MarkingProps as the type
-    getDrawingStyle(marking) {
-        const defaultStyle = { textStyle: { color: undefined }, containerStyle: {} };
+const PeriodDay = (props) => {
+    const { theme, marking, date, onPress, onLongPress, state, accessibilityLabel, testID, children } = props;
+    const dateData = date ? xdateToData(new XDate(date)) : undefined;
+    const style = useRef(styleConstructor(theme));
+    const markingStyle = useMemo(() => {
+        const defaultStyle = { textStyle: {}, containerStyle: {} };
         if (!marking) {
             return defaultStyle;
         }
-        if (marking.disabled) {
-            defaultStyle.textStyle.color = this.style.disabledText.color;
-        }
-        else if (marking.inactive) {
-            defaultStyle.textStyle.color = this.style.inactiveText.color;
-        }
-        else if (marking.selected) {
-            defaultStyle.textStyle.color = this.style.selectedText.color;
-        }
-        const resultStyle = [marking].reduce((prev, next) => {
-            // if (next.quickAction) { //???
-            //   if (next.first || next.last) {
-            //     prev.containerStyle = this.style.firstQuickAction;
-            //     prev.textStyle = this.style.firstQuickActionText;
-            //     if (next.endSelected && next.first && !next.last) {
-            //       prev.rightFillerStyle = '#c1e4fe';
-            //     } else if (next.endSelected && next.last && !next.first) {
-            //       prev.leftFillerStyle = '#c1e4fe';
-            //     }
-            //   } else if (!next.endSelected) {
-            //     prev.containerStyle = this.style.quickAction;
-            //     prev.textStyle = this.style.quickActionText;
-            //   } else if (next.endSelected) {
-            //     prev.leftFillerStyle = '#c1e4fe';
-            //     prev.rightFillerStyle = '#c1e4fe';
-            //   }
-            //   return prev;
-            // }
-            // if (next.status === 'NotAvailable') { //???
-            //   prev.textStyle = this.style.naText;
-            // }
-            const color = next.color;
-            if (next.startingDay) {
-                prev.startingDay = { color };
+        else {
+            if (marking.disabled) {
+                defaultStyle.textStyle = { color: style.current.disabledText.color };
             }
-            if (next.endingDay) {
-                prev.endingDay = { color };
+            else if (marking.inactive) {
+                defaultStyle.textStyle = { color: style.current.inactiveText.color };
             }
-            if (!next.startingDay && !next.endingDay) {
-                prev.day = { color };
+            else if (marking.selected) {
+                defaultStyle.textStyle = { color: style.current.selectedText.color };
             }
-            if (next.textColor) {
-                prev.textStyle.color = next.textColor;
+            if (marking.startingDay) {
+                defaultStyle.startingDay = { backgroundColor: marking.color };
+            }
+            if (marking.endingDay) {
+                defaultStyle.endingDay = { backgroundColor: marking.color };
+            }
+            if (!marking.startingDay && !marking.endingDay) {
+                defaultStyle.day = { backgroundColor: marking.color };
+            }
+            if (marking.textColor) {
+                defaultStyle.textStyle = { color: marking.textColor };
             }
             if (marking.customTextStyle) {
                 defaultStyle.textStyle = marking.customTextStyle;
@@ -99,103 +42,104 @@ export default class PeriodDay extends Component {
             if (marking.customContainerStyle) {
                 defaultStyle.containerStyle = marking.customContainerStyle;
             }
-            return prev;
-        }, defaultStyle);
-        return resultStyle;
-    }
-    render() {
-        const { state, marking } = this.props;
-        const containerStyle = [this.style.base];
-        const textStyle = [this.style.text];
-        let leftFillerStyle = { backgroundColor: undefined };
-        let rightFillerStyle = { backgroundColor: undefined };
-        let fillerStyle = {};
-        let fillers;
-        // TODO: refactor - move all styling logic out of render()
-        if (state === 'disabled') {
-            textStyle.push(this.style.disabledText);
+            return defaultStyle;
         }
-        else if (state === 'inactive') {
-            textStyle.push(this.style.inactiveText);
-        }
-        else if (state === 'today') {
-            containerStyle.push(this.style.today);
-            textStyle.push(this.style.todayText);
+    }, [marking]);
+    const containerStyle = useMemo(() => {
+        const containerStyle = [style.current.base];
+        if (state === 'today') {
+            containerStyle.push(style.current.today);
         }
         if (marking) {
             containerStyle.push({
                 borderRadius: 17,
                 overflow: 'hidden'
             });
-            const flags = this.markingStyle;
-            if (flags.textStyle) {
-                textStyle.push(flags.textStyle);
+            if (markingStyle.containerStyle) {
+                containerStyle.push(markingStyle.containerStyle);
             }
-            if (flags.containerStyle) {
-                containerStyle.push(flags.containerStyle);
+            const start = markingStyle.startingDay;
+            const end = markingStyle.endingDay;
+            if (start && !end) {
+                containerStyle.push({ backgroundColor: markingStyle.startingDay?.backgroundColor });
             }
-            if (flags.leftFillerStyle) {
-                leftFillerStyle.backgroundColor = flags.leftFillerStyle;
+            else if (end && !start || end && start) {
+                containerStyle.push({ backgroundColor: markingStyle.endingDay?.backgroundColor });
             }
-            if (flags.rightFillerStyle) {
-                rightFillerStyle.backgroundColor = flags.rightFillerStyle;
+        }
+        return containerStyle;
+    }, [marking, state]);
+    const textStyle = useMemo(() => {
+        const textStyle = [style.current.text];
+        if (state === 'disabled') {
+            textStyle.push(style.current.disabledText);
+        }
+        else if (state === 'inactive') {
+            textStyle.push(style.current.inactiveText);
+        }
+        else if (state === 'today') {
+            textStyle.push(style.current.todayText);
+        }
+        if (marking) {
+            if (markingStyle.textStyle) {
+                textStyle.push(markingStyle.textStyle);
             }
-            if (flags.startingDay && !flags.endingDay) {
-                leftFillerStyle = {
-                    backgroundColor: this.theme.calendarBackground
-                };
-                rightFillerStyle = {
-                    backgroundColor: flags.startingDay.color
-                };
-                containerStyle.push({
-                    backgroundColor: flags.startingDay.color
-                });
-            }
-            else if (flags.endingDay && !flags.startingDay) {
-                rightFillerStyle = {
-                    backgroundColor: this.theme.calendarBackground
-                };
-                leftFillerStyle = {
-                    backgroundColor: flags.endingDay.color
-                };
-                containerStyle.push({
-                    backgroundColor: flags.endingDay.color
-                });
-            }
-            else if (flags.day) {
-                leftFillerStyle = { backgroundColor: flags.day.color };
-                rightFillerStyle = { backgroundColor: flags.day.color };
-                fillerStyle = { backgroundColor: flags.day.color };
-            }
-            else if (flags.endingDay && flags.startingDay) {
-                rightFillerStyle = {
-                    backgroundColor: this.theme.calendarBackground
-                };
-                leftFillerStyle = {
-                    backgroundColor: this.theme.calendarBackground
-                };
-                containerStyle.push({
-                    backgroundColor: flags.endingDay.color
-                });
-            }
-            // TODO: refactor - move all fillers logic out of render()
-            fillers = (<View style={[this.style.fillers, fillerStyle]}>
-          <View style={[this.style.leftFiller, leftFillerStyle]}/>
-          <View style={[this.style.rightFiller, rightFillerStyle]}/>
+        }
+        return textStyle;
+    }, [marking, state]);
+    const fillerStyles = useMemo(() => {
+        const leftFillerStyle = { backgroundColor: undefined };
+        const rightFillerStyle = { backgroundColor: undefined };
+        let fillerStyle = {};
+        const start = markingStyle.startingDay;
+        const end = markingStyle.endingDay;
+        if (start && !end) {
+            rightFillerStyle.backgroundColor = markingStyle.startingDay?.backgroundColor;
+        }
+        else if (end && !start) {
+            leftFillerStyle.backgroundColor = markingStyle.endingDay?.backgroundColor;
+        }
+        else if (markingStyle.day) {
+            leftFillerStyle.backgroundColor = markingStyle.day?.backgroundColor;
+            rightFillerStyle.backgroundColor = markingStyle.day?.backgroundColor;
+            fillerStyle = { backgroundColor: markingStyle.day?.backgroundColor };
+        }
+        return { leftFillerStyle, rightFillerStyle, fillerStyle };
+    }, [marking]);
+    const renderFillers = () => {
+        if (marking) {
+            return (<View style={[style.current.fillers, fillerStyles.fillerStyle]}>
+          <View style={[style.current.leftFiller, fillerStyles.leftFillerStyle]}/>
+          <View style={[style.current.rightFiller, fillerStyles.rightFillerStyle]}/>
         </View>);
         }
-        const { theme, accessibilityLabel, testID } = this.props;
-        // TODO: refactor - allow feedback for unmarked days
-        return (<TouchableWithoutFeedback testID={testID} onPress={this.onPress} onLongPress={this.onLongPress} disabled={marking?.disableTouchEvent} accessible accessibilityRole={marking?.disableTouchEvent ? undefined : 'button'} accessibilityLabel={accessibilityLabel}>
-        <View style={this.style.wrapper}>
-          {fillers}
-          <View style={containerStyle}>
-            <Text allowFontScaling={false} style={textStyle}>
-              {String(this.props.children)}
-            </Text>
-            <Dot theme={theme} color={marking?.dotColor} marked={marking?.marked}/>
-          </View>
+    };
+    const _onPress = useCallback(() => {
+        onPress?.(dateData);
+    }, [onPress]);
+    const _onLongPress = useCallback(() => {
+        onLongPress?.(dateData);
+    }, [onLongPress]);
+    const Component = marking ? TouchableWithoutFeedback : TouchableOpacity;
+    return (<Component testID={testID} onPress={_onPress} onLongPress={_onLongPress} disabled={marking?.disableTouchEvent} accessible accessibilityRole={marking?.disableTouchEvent ? undefined : 'button'} accessibilityLabel={accessibilityLabel}>
+      <View style={style.current.wrapper}>
+        {renderFillers()}
+        <View style={containerStyle}>
+          <Text allowFontScaling={false} style={textStyle}>
+            {String(children)}
+          </Text>
+          <Dot theme={theme} color={marking?.dotColor} marked={marking?.marked}/>
         </View>
-      </TouchableWithoutFeedback>);
-    }
-}
+      </View>
+    </Component>);
+};
+export default PeriodDay;
+PeriodDay.displayName = 'PeriodDay';
+PeriodDay.propTypes = {
+    state: PropTypes.oneOf(['selected', 'disabled', 'inactive', 'today', '']),
+    marking: PropTypes.any,
+    theme: PropTypes.object,
+    onPress: PropTypes.func,
+    onLongPress: PropTypes.func,
+    date: PropTypes.string
+};

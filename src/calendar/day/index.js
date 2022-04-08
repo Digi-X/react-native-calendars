@@ -3,6 +3,7 @@ import XDate from 'xdate';
 import React, { useMemo } from 'react';
 import { formatNumbers, isToday } from '../../dateutils';
 import { getDefaultLocale } from '../../services';
+import { xdateToData } from '../../interface';
 // @ts-expect-error
 import { SELECT_DATE_SLOT } from '../../testIDs';
 import BasicDay from './basic';
@@ -43,8 +44,11 @@ const Day = React.memo((props) => {
         const formatAccessibilityLabel = getDefaultLocale().formatAccessibilityLabel || 'dddd d MMMM yyyy';
         return `${_isToday ? today : ''} ${_date?.toString(formatAccessibilityLabel)} ${markingAccessibilityLabel}`;
     }, [_date, marking, _isToday]);
-    const Component = dayComponent || markingType === 'period' ? PeriodDay : BasicDay;
-    return (<Component {...props} accessibilityLabel={getAccessibilityLabel} testID={`${SELECT_DATE_SLOT}-${date}`}>
+    const Component = dayComponent || (markingType === 'period' ? PeriodDay : BasicDay);
+    const dayComponentProps = dayComponent ? { date: xdateToData(date ? new XDate(date) : new XDate()) } : undefined;
+    return (
+    //@ts-expect-error
+    <Component {...props} accessibilityLabel={getAccessibilityLabel} testID={`${SELECT_DATE_SLOT}-${date}`} {...dayComponentProps}>
       {formatNumbers(_date?.getDate())}
     </Component>);
 });

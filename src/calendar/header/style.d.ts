@@ -115,9 +115,15 @@ export default function (theme?: Theme): StyleSheet.NamedStyles<any> | StyleShee
         width?: number | undefined;
         height?: number | undefined;
         tintColor: string;
+        transform?: {
+            scaleX: number;
+        }[] | undefined;
     };
     disabledArrowImage: {
         tintColor: string;
+        transform?: {
+            scaleX: number;
+        }[] | undefined;
     };
     dayHeader: {
         marginTop: number;

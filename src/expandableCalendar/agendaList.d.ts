@@ -1,4 +1,5 @@
-import React from 'react';
+/// <reference types="react" />
+import PropTypes from 'prop-types';
 import { SectionListProps, DefaultSectionT, ViewStyle } from 'react-native';
 import { Theme } from '../types';
 export interface AgendaListProps extends SectionListProps<any, DefaultSectionT> {
@@ -21,7 +22,28 @@ export interface AgendaListProps extends SectionListProps<any, DefaultSectionT> 
     viewOffset?: number;
     /** enable scrolling the agenda list to the next date with content when pressing a day without content */
     scrollToNextEvent?: boolean;
-    context?: any;
 }
-declare const _default: React.ComponentClass<AgendaListProps, any>;
-export default _default;
+/**
+ * @description: AgendaList component
+ * @note: Should be wrapped with 'CalendarProvider'
+ * @extends: SectionList
+ * @example: https://github.com/wix/react-native-calendars/blob/master/example/src/screens/expandableCalendar.js
+ */
+declare const AgendaList: {
+    (props: AgendaListProps): JSX.Element;
+    displayName: string;
+    propTypes: {
+        dayFormat: PropTypes.Requireable<string>;
+        dayFormatter: PropTypes.Requireable<(...args: any[]) => any>;
+        useMoment: PropTypes.Requireable<boolean>;
+        markToday: PropTypes.Requireable<boolean>;
+        sectionStyle: PropTypes.Requireable<number | object>;
+        avoidDateUpdates: PropTypes.Requireable<boolean>;
+    };
+    defaultProps: {
+        dayFormat: string;
+        stickySectionHeadersEnabled: boolean;
+        markToday: boolean;
+    };
+};
+export default AgendaList;

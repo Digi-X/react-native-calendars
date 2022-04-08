@@ -4,14 +4,14 @@ import min from 'lodash/min';
 import map from 'lodash/map';
 import constants from '../commons/constants';
 import styleConstructor, { HOURS_SIDEBAR_WIDTH } from './style';
-import populateEvents, { HOUR_BLOCK_HEIGHT } from './Packer';
+import { populateEvents, HOUR_BLOCK_HEIGHT } from './Packer';
 import { calcTimeOffset } from './helpers/presenter';
 import TimelineHours from './TimelineHours';
 import EventBlock from './EventBlock';
 import NowIndicator from './NowIndicator';
 import useTimelineOffset from './useTimelineOffset';
 const Timeline = (props) => {
-    const { format24h = true, start = 0, end = 24, date, events = [], onEventPress, onBackgroundLongPress, onBackgroundLongPressOut, renderEvent, theme, scrollToFirst, scrollToNow, initialTime, showNowIndicator, scrollOffset, onChangeOffset, overlapEventsSpacing, rightEdgeSpacing, eventTapped } = props;
+    const { format24h = true, start = 0, end = 24, date, events = [], onEventPress, onBackgroundLongPress, onBackgroundLongPressOut, renderEvent, theme, scrollToFirst, scrollToNow, initialTime, showNowIndicator, scrollOffset, onChangeOffset, overlapEventsSpacing, rightEdgeSpacing, unavailableHours, unavailableHoursColor, eventTapped } = props;
     const scrollView = useRef();
     const calendarHeight = useRef((end - start) * HOUR_BLOCK_HEIGHT);
     const styles = useRef(styleConstructor(theme || props.styles, calendarHeight.current));
@@ -61,7 +61,7 @@ const Timeline = (props) => {
     return (<ScrollView 
     // @ts-expect-error
     ref={scrollView} contentContainerStyle={[styles.current.contentStyle, { width: constants.screenWidth }]} {...scrollEvents}>
-      <TimelineHours start={start} end={end} date={date} format24h={format24h} styles={styles.current} onBackgroundLongPress={onBackgroundLongPress} onBackgroundLongPressOut={onBackgroundLongPressOut}/>
+      <TimelineHours start={start} end={end} date={date} format24h={format24h} styles={styles.current} unavailableHours={unavailableHours} unavailableHoursColor={unavailableHoursColor} onBackgroundLongPress={onBackgroundLongPress} onBackgroundLongPressOut={onBackgroundLongPressOut}/>
       {renderEvents()}
       {showNowIndicator && <NowIndicator styles={styles.current}/>}
     </ScrollView>);

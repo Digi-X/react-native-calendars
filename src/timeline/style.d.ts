@@ -199,4 +199,10 @@ export default function styleConstructor(theme: Theme | undefined, calendarHeigh
         textAlign: "center";
         width: number;
     };
+    unavailableHoursBlock: {
+        position: "absolute";
+        left: number;
+        right: number;
+        backgroundColor: string;
+    };
 };

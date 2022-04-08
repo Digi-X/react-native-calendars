@@ -158,7 +158,7 @@ export default class ExpandableCalendarScreen extends Component {
         return <AgendaItem item={item}/>;
     };
     render() {
-        return (<CalendarProvider date={ITEMS[0].title} onDateChanged={this.onDateChanged} onMonthChange={this.onMonthChange} showTodayButton disabledOpacity={0.6}>
+        return (<CalendarProvider date={ITEMS[1].title} onDateChanged={this.onDateChanged} onMonthChange={this.onMonthChange} showTodayButton disabledOpacity={0.6}>
         {this.props.weekView ? (<WeekCalendar testID={testIDs.weekCalendar.CONTAINER} firstDay={1} markedDates={this.marked}/>) : (<ExpandableCalendar testID={testIDs.expandableCalendar.CONTAINER} 
             // horizontal={false}
             // hideArrows

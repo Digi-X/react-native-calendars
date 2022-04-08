@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import XDate from 'xdate';
 import { Map } from 'immutable';
 import React, { Component } from 'react';
-import { FlatList, View, Text } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { extractComponentProps } from '../../componentUpdater';
-import { weekDayNames, sameWeek } from '../../dateutils';
+import { sameWeek } from '../../dateutils';
 import { toMarkingFormat } from '../../interface';
 import styleConstructor from '../style';
 import asCalendarConsumer from '../asCalendarConsumer';
 import CalendarList from '../../calendar-list';
+import WeekDaysNames from '../../commons/WeekDaysNames';
 import Week from '../week';
 import Presenter from './presenter';
 import constants from '../../commons/constants';
@@ -115,15 +116,12 @@ class WeekCalendar extends Component {
         };
     };
     keyExtractor = (_, index) => index.toString();
-    renderWeekDaysNames = memoize(weekDaysNames => {
-        return weekDaysNames.map((day, index) => (<Text allowFontScaling={false} key={index} style={this.style.dayHeader} numberOfLines={1} accessibilityLabel={''}>
-        {day}
-      </Text>));
-    });
+    renderWeekDaysNames = () => {
+        return (<WeekDaysNames firstDay={this.props.firstDay} style={this.style.dayHeader}/>);
+    };
     render() {
         const { allowShadow, firstDay, hideDayNames, current, context } = this.props;
         const { items } = this.state;
-        const weekDaysNames = weekDayNames(firstDay);
         const extraData = Map({
             current,
             date: context.date,
@@ -132,7 +130,7 @@ class WeekCalendar extends Component {
         return (<View testID={this.props.testID} style={[allowShadow && this.style.containerShadow, !hideDayNames && this.style.containerWrapper]}>
         {!hideDayNames && (<View style={[this.style.week, this.style.weekCalendar]}>
             {/* {this.props.weekNumbers && <Text allowFontScaling={false} style={this.style.dayHeader}></Text>} */}
-            {this.renderWeekDaysNames(weekDaysNames)}
+            {this.renderWeekDaysNames()}
           </View>)}
         <FlatList ref={this.presenter.list} data={items} extraData={extraData} style={this.style.container} horizontal showsHorizontalScrollIndicator={false} pagingEnabled scrollEnabled renderItem={this.renderItem} keyExtractor={this.keyExtractor} initialScrollIndex={NUMBER_OF_PAGES} getItemLayout={this.getItemLayout} onScroll={this.onScroll} onMomentumScrollEnd={this.onMomentumScrollEnd}/>
       </View>);

@@ -115,6 +115,7 @@ const PeriodDay = (props) => {
         }
     };
     const _onPress = useCallback(() => {
+        console.log("penguin compile" + dateData);
         onPress?.(dateData);
     }, [onPress]);
     const _onLongPress = useCallback(() => {

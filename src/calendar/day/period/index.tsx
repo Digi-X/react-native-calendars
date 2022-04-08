@@ -153,7 +153,6 @@ const PeriodDay = (props: PeriodDayProps) => {
   };
 
   const _onPress = useCallback(() => {
-    console.log("penguin compile"+dateData);
     onPress?.(dateData);
   }, [onPress]);
 

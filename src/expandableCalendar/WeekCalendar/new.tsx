@@ -4,7 +4,7 @@ import XDate from 'xdate';
 
 import InfiniteList from '../../infinite-list';
 import Week from '../week';
-import WeekDaysNames from './WeekDaysNames';
+import WeekDaysNames from '../../commons/WeekDaysNames';
 import {CalendarListProps} from '../../calendar-list';
 import CalendarContext from '../../expandableCalendar/Context';
 import styleConstructor from '../style';
@@ -18,8 +18,6 @@ import {DateData} from '../../types';
 export interface WeekCalendarProps extends CalendarListProps {
   /** whether to have shadow/elevation for the calendar */
   allowShadow?: boolean;
-  /** whether to hide the names of the week days */
-  hideDayNames?: boolean;
 }
 
 const NUMBER_OF_PAGES = 50;
@@ -106,7 +104,7 @@ const WeekCalendar = (props: WeekCalendarProps) => {
     >
       {!hideDayNames && (
         <View style={[style.current.week, style.current.weekCalendar]}>
-          <WeekDaysNames firstDay={firstDay} style={style.current.dayHeader} />
+          <WeekDaysNames firstDay={firstDay} style={style.current.dayHeader}/>
         </View>
       )}
       <View>
